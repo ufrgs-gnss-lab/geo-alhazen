@@ -3,22 +3,23 @@ Assessment and validation based on the spherical horizon
 
 V.H. Almeida Junior and F. Geremia-Nievinski
 
-Functions solve the reflection on a sphere from different algorithms.
-Also, a function solve reflection parameters on the spherical horizon. 
-The output parameters of the algorithms are:
-- Reflection point position in two dimensions (x,y) (in meters)
-- Grazing angle (degrees)
-- Interferometric delay (in meters)
-- Slant distance (in meters)
-- Arc lenght (in meters)
+Functions to solve the reflection on a sphere using different algorithms.
+Also, a function to solve reflection parameters on the spherical horizon. 
+
+The main algorithm output parameters are:
+- [matrix, with two columns] Reflection point position in two dimensions (x,y) (in meters)
+- [vector] Grazing angle (degrees)
+- [vector] Interferometric delay (in meters)
+- [vector] Slant distance (in meters)
+- [vector] Arc lenght (in meters)
 
 Input parameters are:
-- elevation angle of the satellite/transmitter (e)
-- antenna/observer height above reference surface (Ha)
-- satellite/transmitter above reference surface (Ht)
-- radius of the sphere (R0)
-- algorithms (analytical and numerical) (algorithm)
-- trajectory of the satellite/transmitter (trajectory)
+- e [vector]: transmitting satellite elevation angle (in degrees)
+- Ha [vector]: height of receiving antenna above reference surface (in meters)
+- Ht [scalar, optional]: height of transmitting satellite above reference surface (in meters)
+- R0 [scalar, optional]: rradius of the sphere
+- algo [string, optional]: algorithm name
+- traj [string, optional]: satellite trajectory
 
 The output parameters size are dependent of number of points of the 
 input parameters. On the spherical horizon, only one point is expected
