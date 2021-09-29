@@ -130,6 +130,8 @@ delay_reflect = delay_reflect_inc + delay_reflect_out;
 delay = delay_reflect - delay_direct;
 
 % Elevation angle of specular reflection
+dir_rec_spec = pos_ant_spec./delay_reflect_out;
+dir_vert = [0 1];
 elev_spec = -90 + acosd(dot_all(-dir_vert, -dir_rec_spec));
 
 %% reshape output vectors as in input vector:
