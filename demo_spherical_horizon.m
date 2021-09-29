@@ -32,7 +32,7 @@ for i=1:n
 end
 
 %% Expected values on spherical horizon
-[~, Diref, Rspecref, gref, sldistref, arclenref] = get_spherical_horizon_params (Has, []);
+[Diref, gref, arclenref, sldistref, Rspecref] = get_spherical_horizon_params (Has, []);
 Xspecref = Rspecref(:,1);
 Yspecref = Rspecref(:,2)+Rs;
 
