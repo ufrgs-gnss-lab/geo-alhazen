@@ -55,7 +55,7 @@ rmse (6,:) = sqrt (sum(dif_al,1).^2/numel(Has));
 %% Tables
 
 % Parameters
-tbl_Di = array2table (Di, 'VariableNames',algs,'RowNames');
+tbl_Di = array2table (Di, 'VariableNames',algs);
 tbl_g = array2table (g, 'VariableNames',algs);
 tbl_X = array2table (Xspec, 'VariableNames',algs);
 tbl_Y = array2table (Yspec, 'VariableNames',algs);
@@ -75,10 +75,13 @@ tbl_rmse = array2table (rmse, 'VariableNames',algs, ...
                         'RowNames',{'Graz. angle','Delay','X coord.','Y coord.','Slant dist.','Arc Len.'});
 
 %% Figure minimum elevation angle
+x = 0:1:max(Has);
+y = get_horizon_elevation_angle([0:1:max(Has)],[]);
+
 figure
-plot (get_horizon_elevation_angle([0:1:max(Has)],[]),[0:1:max(Has)],'--r','LineWidth',3)
-xlim([min(ehors) 0])
-ylabel ('Antenna height (m)')
-xlabel ('Minimum elevation angle (degrees)')
+plot (x,y,'--r','LineWidth',3)
+ylim([min(ehors) 0])
+ylabel ('Minimum elevation angle (degrees)')
+xlabel ('Antenna height (m)')
 grid on
-set(gca,'FontSize',14)
+set(gca,'FontSize',18)
