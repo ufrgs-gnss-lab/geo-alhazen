@@ -1,9 +1,10 @@
-clearvars
+setup_spherical_horizon () % Initial setup
 
 %% Input values
 Has = [10 50 100 200 300 500 1000];
+ehors = get_spherical_reflection_horizon_elev (Has); % Minimum elevation angle
 algs = {'fujimura','martinneira','helm','millerandvegh','fermat'};
-Rs = get_earth_radius ();
+frame = 'quasigeo';
 
 %% Pre-allocate data
 n = numel(Has);
@@ -13,38 +14,29 @@ Di = tmp;
 g = tmp;
 arclen = tmp;
 sldist = tmp;
-Xspec = tmp;
-Yspec = tmp;
+xspec = tmp;
+yspec = tmp;
 
 %% Computation of parameters for each algorithm
-ehors = get_horizon_elevation_angle (Has); % Minimum elevation angle
-
-for i=1:n
-    Ha = Has(i);
-    ehor = ehors(i);
-    for j=1:m
-        algorithm = algs{j};
-        [Di(i,j), g(i,j), arclen(i,j), sldist(i,j), Rspec]...
-            = get_reflection_spherical (ehor, Ha, [], [], algorithm);
-        Xspec(i,j) = Rspec(1);
-        Yspec(i,j) = Rspec(2)+Rs;
-    end
+for i=1:m
+    algorithm = algs{i};
+    [Di(:,i), g(:,i), arclen(:,i), sldist(:,i), X_spec(:,i), Y_spec(:,i)]...
+            = get_reflection_spherical (ehors(:), Has(:), [], [], algorithm, [], frame);
 end
 
 %% Expected values on spherical horizon
-[Diref, gref, arclenref, sldistref, Rspecref] = get_spherical_horizon_params (Has, []);
-Xspecref = Rspecref(:,1);
-Yspecref = Rspecref(:,2)+Rs;
+[Diref, gref, arclenref, sldistref, X_specref, Y_specref] ... 
+                   = get_spherical_horizon_params (Has(:), [], frame);
 
 %% Differences from expectation
-dif_Di = Di - Diref';
-dif_g = g - gref';
-dif_X = Xspec - Xspecref;
-dif_Y = Yspec - Yspecref;
-dif_sd = sldist - sldistref';
-dif_al = arclen - arclenref';
+dif_Di = Di - Diref;
+dif_g = g - gref;
+dif_X = X_spec - X_specref;
+dif_Y = Y_spec - Y_specref;
+dif_sd = sldist - sldistref;
+dif_al = arclen - arclenref;
 
-%RMSE
+%% RMSE
 rmse (1,:) = sqrt (sum(dif_g,1).^2 /numel(Has));
 rmse (2,:) = sqrt (sum(dif_Di,1).^2/numel(Has));
 rmse (3,:) = sqrt (sum(dif_X,1).^2./numel(Has));
@@ -57,8 +49,8 @@ rmse (6,:) = sqrt (sum(dif_al,1).^2/numel(Has));
 % Parameters
 tbl_Di = array2table (Di, 'VariableNames',algs);
 tbl_g = array2table (g, 'VariableNames',algs);
-tbl_X = array2table (Xspec, 'VariableNames',algs);
-tbl_Y = array2table (Yspec, 'VariableNames',algs);
+tbl_X = array2table (X_spec, 'VariableNames',algs);
+tbl_Y = array2table (Y_spec, 'VariableNames',algs);
 tbl_sd = array2table (sldist, 'VariableNames',algs);
 tbl_al = array2table (arclen, 'VariableNames',algs);
 
@@ -73,15 +65,3 @@ tbl_dal = array2table (dif_al, 'VariableNames',algs);
 % RMSE
 tbl_rmse = array2table (rmse, 'VariableNames',algs, ...
                         'RowNames',{'Graz. angle','Delay','X coord.','Y coord.','Slant dist.','Arc Len.'});
-
-%% Figure minimum elevation angle
-x = 0:1:max(Has);
-y = get_horizon_elevation_angle([0:1:max(Has)],[]);
-
-figure
-plot (x,y,'--r','LineWidth',3)
-ylim([min(ehors) 0])
-ylabel ('Minimum elevation angle (degrees)')
-xlabel ('Antenna height (m)')
-grid on
-set(gca,'FontSize',18)
