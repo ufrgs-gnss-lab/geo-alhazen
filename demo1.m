@@ -1,4 +1,4 @@
-setup_spherical_horizon () % Initial setup
+setup_spherical_reflection () % Initial setup
 
 %% Input values
 Has = [10 50 100 200 300 500 1000];
