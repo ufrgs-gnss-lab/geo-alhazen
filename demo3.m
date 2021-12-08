@@ -1,4 +1,4 @@
-setup_spherical_horizon () % Initial setup
+setup_spherical_reflection () % Initial setup
 
 Ha_max = 1000;
 Ha_step = 1;
