@@ -164,7 +164,8 @@ end
 function Hts = get_satellite_trajectory (e, Ha, Ht, R0, trajectory)
     assert(isvector(Ha))
     assert(isscalar(Ht))
-    n = numel(Ha);
+    %n = numel(Ha);  % WRONG!
+    n = numel(e);
 
     %% initial positions
     if isscalar(Ha)
