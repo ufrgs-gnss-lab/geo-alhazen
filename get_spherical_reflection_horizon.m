@@ -1,6 +1,6 @@
-function [delay, graz_ang, arc_len, slant_dist, x_spec, y_spec, ehor] = get_spherical_horizon_params (Ha, Rs, frame)
+function [delay, graz_ang, arc_len, slant_dist, x_spec, y_spec, ehor] = get_spherical_reflection_horizon (Ha, Rs, frame)
 
-% GET_SPHERICAL_HORIZON_PARAMS: Returns parameters of the specular reflection on the spherical horizon.
+% GET_SPHERICAL_REFLECTION_HORIZON: Returns parameters of the specular reflection on the spherical horizon.
 % 
 % All parameters are precisely derived from closed trigonometric formulations or exact expected results. 
 % 
