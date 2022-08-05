@@ -1,3 +1,7 @@
+% Results showed in the paper:
+% Computation of specular reflections on a sphere: Assessment and validation based on the spherical horizon
+% Authors: V.H. Almeida Junior and F. Geremia-Nievinski.
+
 setup_spherical_reflection () % Initial setup
 
 %% Input values

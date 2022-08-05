@@ -1,4 +1,5 @@
-function [delay, graz_ang, arc_len, slant_dist, x_spec, y_spec, x_trans, y_trans, elev_spec] = get_spherical_reflection (e, Ha, Ht, Rs, algorithm, trajectory, frame)
+function [delay, graz_ang, arc_len, slant_dist, x_spec, y_spec, x_trans, y_trans, elev_spec] = ...
+            get_spherical_reflection (e, Ha, Ht, Rs, algorithm, trajectory, frame)
 % GET_SPHERICAL_REFLECTION  Calculates specular reflection on spherical surface.
 %
 % INPUT:
@@ -48,8 +49,8 @@ function [delay, graz_ang, arc_len, slant_dist, x_spec, y_spec, x_trans, y_trans
 
     if isempty(e),   e  = 45;  end
     if isempty(Ha),  Ha = 10;  end
-    if isempty(Ht),  Ht = get_satellite_height();  end
     if isempty(Rs),  Rs = get_earth_radius();  end
+    if isempty(Ht),  Ht = get_satellite_height();  end
     if isempty(algorithm),  algorithm = 'fujimura';  end
     if isempty(trajectory),  trajectory = 'orbital';  end
     if isempty(frame),  frame = 'local';  end
