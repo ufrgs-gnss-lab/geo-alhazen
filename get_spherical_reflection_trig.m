@@ -1,6 +1,6 @@
 function [Di, sldist, g, gamma, der] = get_spherical_reflection_trig (e, Ha, Rs, optnum)
 
-% GET_SPHERICAL_REFLECTION_TRIG_APPROX computes interferometric delay and
+% GET_SPHERICAL_REFLECTION_TRIG computes interferometric delay and
 % slant distance on a spherical surface with trigonometric formulation
 % based on an assumption of infinite distance of the transmitting satellite.
 %
@@ -26,15 +26,13 @@ if (nargin < 4) || isempty(optnum);  optnum = struct();  end
 Ra = Rs+Ha;
 gamma = ((Ra.^2)/(Rs.^2))-cosd(g).^2;
 sldist = Rs.*(sqrt(gamma)-sind(g));
-der = e-e_spec; % or der = -(-e+e_spec) (master thesis uncorrect)
+der = e-e_spec; % or der = -(-e+e_spec) (master thesis incorrect)
 Di = sldist.*(1-cosd(der));
-% Di1 = sldist.*(1-cosd(2.*e+der)); % #WRONG! (master thesis uncorrect)
+% Di1 = sldist.*(1-cosd(2.*e+der)); % #WRONG! (master thesis incorrect)
 
 end
 
 function [g,e_spec] = get_spherical_numerical (e, Ha, Rs, optnum)
-
-
 if isfieldempty (optnum, 'Ht'),  optnum.Ht = [];  end
 if isfieldempty (optnum, 'algorithm'),  optnum.algorithm = [];  end
 if isfieldempty (optnum, 'Ht'),  optnum.trajectory = [];  end
