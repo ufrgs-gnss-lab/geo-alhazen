@@ -84,11 +84,9 @@ y_trans = pos_trans_loc(2);
 geo_ang = rad2deg(angle(u));
 
 %% Grazing Angle
-if e==90
-    graz_ang = get_grazing_angle_vector (pos_ant_loc,pos_spec_loc,pos_trans_loc); 
-    return
-end
 
-graz_ang = atand(cotd(geo_ang)-(Rs./Ra)./sind(geo_ang));
+% graz_ang = atand(cotd(geo_ang)-(Rs./Ra)./sind(geo_ang)); #OLD 
+graz_ang = 90+rad2deg(angle(z1/u-1));
+
 end
 
