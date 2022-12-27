@@ -67,7 +67,7 @@ while (i <= i_max)
 end
 
 if (i > i_max)
-    warn('matlab:geoalhazen:helm:noConverg', 'Did not converge!');
+    warning('matlab:geoalhazen:helm:noConverg', 'Did not converge!');
 end
 
 gamma = gammas(i);
