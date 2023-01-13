@@ -9,4 +9,4 @@ Also, functions to solve reflection parameters on the spherical horizon and at z
 For the documentation of the main algorithm input and output parameters, 
 please see the functions:
 - [get_spherical_reflection.m](get_spherical_reflection.m).
-- [get_spherical_reflection_zenith.m](geo-alhaxzen-aux/get_spherical_reflection_zenith.m)
+- [get_spherical_reflection_zenith.m](geo-alhazen-aux/get_spherical_reflection_zenith.m)
