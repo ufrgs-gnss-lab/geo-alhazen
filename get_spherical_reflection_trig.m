@@ -35,8 +35,8 @@ end
 function [g,e_spec] = get_spherical_numerical (e, Ha, Rs, optnum)
 if isfieldempty (optnum, 'Ht'),  optnum.Ht = [];  end
 if isfieldempty (optnum, 'algorithm'),  optnum.algorithm = [];  end
-if isfieldempty (optnum, 'Ht'),  optnum.trajectory = [];  end
-if isfieldempty (optnum, 'Ht'),  optnum.frame = [];  end
+if isfieldempty (optnum, 'trajectory'),  optnum.trajectory = [];  end
+if isfieldempty (optnum, 'frame'),  optnum.frame = [];  end
 Ht = optnum.Ht;
 algorithm = optnum.algorithm;
 trajectory = optnum.trajectory;
