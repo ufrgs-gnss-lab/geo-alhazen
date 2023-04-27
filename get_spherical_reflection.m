@@ -3,10 +3,10 @@ function [delay, graz_ang, arc_len, slant_dist, x_spec, y_spec, x_trans, y_trans
 % GET_SPHERICAL_REFLECTION  Calculates specular reflection on spherical surface.
 %
 % INPUT:
-% - e: elevation angles (matrix; in degrees) 
-% - Ha: antenna height (matrix; in meters)
+% - e: transmitter elevation angles (matrix; in degrees) 
+% - Ha: receiver antenna height (matrix; in meters)
 % Notes: 
-% - elevation angle is defined 90° at zenith or zero at the tangent plane horizon
+% - transmitter elevation angle is defined 90° at zenith or zero at the tangent plane horizon, as seen from the receiver antenna
 % - matrix input may also be a vector or a scalar
 % - non-scalar input must have the same size
 % 
