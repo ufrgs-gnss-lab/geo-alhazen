@@ -6,7 +6,7 @@ function [delay, graz_ang, arc_len, slant_dist, x_spec, y_spec, x_trans, y_trans
 % - e: elevation angles (matrix; in degrees) 
 % - Ha: antenna height (matrix; in meters)
 % Notes: 
-% - elevation angle is define zero at zenith
+% - elevation angle is defined 90° at zenith or zero at the tangent plane horizon
 % - matrix input may also be a vector or a scalar
 % - non-scalar input must have the same size
 % 
