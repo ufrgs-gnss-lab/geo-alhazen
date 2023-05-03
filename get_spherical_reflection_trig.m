@@ -24,7 +24,7 @@ if (nargin < 4) || isempty(optnum);  optnum = struct();  end
 %%
 [g,e_spec] = get_spherical_numerical (e, Ha, Rs, optnum);
 Ra = Rs+Ha;
-gamma = ((Ra.^2)/(Rs.^2))-cosd(g).^2;
+gamma = (Ra./Rs).^2-cosd(g).^2;
 sldist = Rs.*(sqrt(gamma)-sind(g));
 der = e-e_spec; % or der = -(-e+e_spec) (master thesis incorrect)
 Di = sldist.*(1-cosd(der));
@@ -35,8 +35,8 @@ end
 function [g,e_spec] = get_spherical_numerical (e, Ha, Rs, optnum)
 if isfieldempty (optnum, 'Ht'),  optnum.Ht = [];  end
 if isfieldempty (optnum, 'algorithm'),  optnum.algorithm = [];  end
-if isfieldempty (optnum, 'Ht'),  optnum.trajectory = [];  end
-if isfieldempty (optnum, 'Ht'),  optnum.frame = [];  end
+if isfieldempty (optnum, 'trajectory'),  optnum.trajectory = [];  end
+if isfieldempty (optnum, 'frame'),  optnum.frame = [];  end
 Ht = optnum.Ht;
 algorithm = optnum.algorithm;
 trajectory = optnum.trajectory;

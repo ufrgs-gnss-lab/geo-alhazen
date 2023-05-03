@@ -3,10 +3,11 @@ function [delay, graz_ang, arc_len, slant_dist, x_spec, y_spec, x_trans, y_trans
 % GET_SPHERICAL_REFLECTION  Calculates specular reflection on spherical surface.
 %
 % INPUT:
-% - e: elevation angles (matrix; in degrees) 
-% - Ha: antenna height (matrix; in meters)
+% - e: transmitter elevation angles (matrix; in degrees) 
+% - Ha: receiver antenna height (matrix; in meters)
 % Notes: 
 % - transmitter elevation angle is defined 90° at zenith or zero at the tangent plane horizon, as seen from the receiver antenna; it may be negative.
+% - transmitter elevation angle is defined 90Â° at zenith or zero at the tangent plane horizon, as seen from the receiver antenna; it may be negative.
 % - matrix input may also be a vector or a scalar
 % - non-scalar input must have the same size
 % 
@@ -21,6 +22,9 @@ function [delay, graz_ang, arc_len, slant_dist, x_spec, y_spec, x_trans, y_trans
 % - delay_direct: direct distance from antenna to satellite
 % Notes: 
 % - grazing angle is defined 90° at zenith or zero at the tangent plane horizon, as seen from the reflection point; 
+% - delay_trig: trigonometric formulation of interferometric propagation delay (matrix, in meters)
+% Notes: 
+% - grazing angle is defined 90Â° at zenith or zero at the tangent plane horizon, as seen from the reflection point; 
 %   it is the same to the transmitter or to the receiver, as it satisfies Snell's law; it is never negative.
 % - output will be a matrix of the same size as input.
 % 
