@@ -1,4 +1,4 @@
-function Re = get_radius_earth (ell, type)
+function Re = get_radius_global (ell, type)
 % definitions: https://en.wikipedia.org/wiki/Earth_radius#Global_radii  
    
    a = ell.a; % semi-major axis
