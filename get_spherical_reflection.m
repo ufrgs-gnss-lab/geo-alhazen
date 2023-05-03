@@ -1,4 +1,4 @@
-function [delay, graz_ang, arc_len, slant_dist, x_spec, y_spec, x_trans, y_trans, elev_spec] = ...
+function [delay, graz_ang, arc_len, slant_dist, x_spec, y_spec, x_trans, y_trans, elev_spec, delay_direct] = ...
             get_spherical_reflection (e, Ha, Ht, Rs, algorithm, trajectory, frame)
 % GET_SPHERICAL_REFLECTION  Calculates specular reflection on spherical surface.
 %
@@ -6,20 +6,23 @@ function [delay, graz_ang, arc_len, slant_dist, x_spec, y_spec, x_trans, y_trans
 % - e: elevation angles (matrix; in degrees) 
 % - Ha: antenna height (matrix; in meters)
 % Notes: 
-% - elevation angle is define zero at zenith
+% - transmitter elevation angle is defined 90° at zenith or zero at the tangent plane horizon, as seen from the receiver antenna; it may be negative.
 % - matrix input may also be a vector or a scalar
 % - non-scalar input must have the same size
 % 
 % OUTPUT:
 % - delay: interferometric propagation delay on spherical surface (matrix, in meters)
-% - graz_ang: grazing angle of spherical reflection that satisfies Snell's law (matrix, in degrees)
+% - graz_ang: grazing angle at reflection point to transmitter or to receiver (matrix, in degrees)
 % - arc_len: arc lenght between subreceiver point and reflection point (matrix, in meters)
 % - slant_dist: slant distance between receiver and reflection point (matrix, in meters)
 % - x_spec, y_spec: reflection point coordinates (matrices, in meters)
 % - x_trans, y_trans: transmitter point coordinates (matrices, in meters)
 % - elev_spec: elevation angle from antenna to reflection point (matrix, in degrees)
-% - delay_trig: trigonometric formulation of interferometric propagation delay (matrix, in meters)
-% Note: output will be a matrix of the same size as input.
+% - delay_direct: direct distance from antenna to satellite
+% Notes: 
+% - grazing angle is defined 90° at zenith or zero at the tangent plane horizon, as seen from the reflection point; 
+%   it is the same to the transmitter or to the receiver, as it satisfies Snell's law; it is never negative.
+% - output will be a matrix of the same size as input.
 % 
 % OPTIONAL INPUT
 % - Ht: Transmitter/satelitte height (scalar, in meters)
@@ -102,7 +105,7 @@ function [delay, graz_ang, arc_len, slant_dist, x_spec, y_spec, x_trans, y_trans
     end
 
     %% Additional parameters
-    [delay, arc_len, slant_dist, elev_spec] = get_spherical_reflection_extra (...
+    [delay, arc_len, slant_dist, elev_spec, delay_direct] = get_spherical_reflection_extra (...
         n2, Ha, Rs, geo_ang, x_spec, y_spec, x_trans, y_trans);
 
     %% Reshape output matrices as in input matrices:
@@ -115,6 +118,7 @@ function [delay, graz_ang, arc_len, slant_dist, x_spec, y_spec, x_trans, y_trans
     x_trans = reshape(x_trans, siz);
     y_trans = reshape(y_trans, siz);
     elev_spec = reshape(elev_spec, siz);
+    delay_direct = reshape(delay_direct, siz);
 
     %% Optionally, convert from reference frame:
     if strcmpi(frame, 'local'),  return;  end
@@ -123,7 +127,7 @@ function [delay, graz_ang, arc_len, slant_dist, x_spec, y_spec, x_trans, y_trans
 end
 
 %%
-function [delay, arc_len, slant_dist, elev_spec] = get_spherical_reflection_extra (n2, Ha, Rs, geo_ang, x_spec, y_spec, x_trans, y_trans)
+function [delay, arc_len, slant_dist, elev_spec, delay_direct] = get_spherical_reflection_extra (n2, Ha, Rs, geo_ang, x_spec, y_spec, x_trans, y_trans)
 
     % Arc Length from subreceiver point to reflection point:
     arc_len = deg2rad(geo_ang)*Rs;
@@ -204,4 +208,3 @@ function Hts = get_satellite_trajectory (e, Ha, Ht, R0, trajectory)
     end
 
 end
-
