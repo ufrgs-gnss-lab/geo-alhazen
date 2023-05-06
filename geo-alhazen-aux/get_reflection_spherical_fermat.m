@@ -58,6 +58,7 @@ x_trans = pos_trans_loc(1);
 y_trans = pos_trans_loc(2);
 
 %% Iterations
+% opt = struct('MaxIter',1000, 'TolX',1e-6, 'TolFun',1e-6, 'PlotFcns', @optimplotfunccount); 
 opt = struct('MaxIter',1000, 'TolX',1e-6, 'TolFun',1e-6); %fminsearch optmization options 
 f = @(x) get_dist_reflect(pos_ant, pos_trans_loc, get_pos_spec(x, Rs)); % Function minimized 
 
