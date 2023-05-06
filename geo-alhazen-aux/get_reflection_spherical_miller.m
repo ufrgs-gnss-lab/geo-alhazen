@@ -53,7 +53,7 @@ for i=1:numel(e_rad)
 end
 
 psi = z2psi(zs,geo_ang_at, k1, k2);
-graz_ang = psi.*180./pi; % Grazing angle of spherical specular reflection
+graz_ang = rad2deg(psi); % Grazing angle of spherical specular reflection
 
 %% Geocentric angles
 % Geocentric angle between receiver and reflection point
