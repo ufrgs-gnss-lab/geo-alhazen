@@ -1,12 +1,10 @@
-% Results showed in the paper:
-% Computation of specular reflections on a sphere: Assessment and validation based on the spherical horizon
-% Authors: V.H. Almeida Junior and F. Geremia-Nievinski.
+% Results at zenith
 
 setup_spherical_reflection() % Initial setup
 
 %% Input values
 Has = [10 50 100 200 300 500 1000];
-ehors = get_spherical_reflection_horizon_elev (Has); % Minimum elevation angle
+ezen = repmat(90,size(Has)); % Minimum elevation angle
 algs = {'fujimura','martinneira','helm','millerandvegh','fermat'};
 frame = 'quasigeo';
 
@@ -25,12 +23,12 @@ Y_spec = tmp;
 for i=1:m
     algorithm = algs{i};
     [Di(:,i), g(:,i), arclen(:,i), sldist(:,i), X_spec(:,i), Y_spec(:,i)]...
-            = get_reflection_spherical (ehors(:), Has(:), [], [], algorithm, [], frame);
+            = get_reflection_spherical (ezen(:), Has(:), [], [], algorithm, [], frame);
 end
 
 %% Expected values on spherical horizon
 [Diref, gref, arclenref, sldistref, X_specref, Y_specref] ... 
-                   = get_spherical_horizon_params (Has(:), [], frame);
+                   = get_spherical_reflection_zenith (Has(:), [], frame);
 
 %% Differences from expectation
 dif_Di = Di - Diref;
