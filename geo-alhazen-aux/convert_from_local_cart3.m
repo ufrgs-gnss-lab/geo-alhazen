@@ -1,15 +1,27 @@
-function [pt_geoc_cart, pt_geod, pt_local_cart] = convert_from_local_cart3 (azim, pt_local_cart2, base_geod, ell)
+function [pt_geoc_cart, pt_geod, pt_local_cart] = convert_from_local_cart3 (az, pt_local_cart1, pos_ant_local, base_geod, ell)
 % CONVERT_FROM_LOCAL_CART convert the local quasigeocentric cartesian,
 % originally on 2D frame alligned to the satellite azimuth
- 
-    n = size(pt_local_cart2,1);
+%
+% INPUT:
+% - az: satellite azimuth
+% - pt_local_cart1: specular point position vector in local frame
+% - pos_ant_local_cart: antenna position vector in local frame
+% - base_geod: 3D geodetic coordinates of the base point or antenna's
+% - ell: ellipsoid name
+%
+% OUTPUT
+% - pt_geoc_cart: 3D geocentric cartesian coordinates of the specular point
+% - pt_geod: 3D geodetic coordinates of the specular point
+% - pt_local_cart: 3D local cartesian coordinates of the specular point
+
+
+    n = size(pt_local_cart1,1);
+    pt_local_cart2 = [pt_local_cart1(:,1) zeros(n,1) pt_local_cart1(:,2)];
     
-    % Define 2D position [X Y] to 3D [X 0 Y]
-    pt_local_cart3 = [pt_local_cart2(:,1) zeros(n,1) pt_local_cart2(:,2)];
+    % Rotate Y-axis with the azimuth
+    pt_local_cart = (myrotate([0,az,0], pt_local_cart2));
     
-    % Rotate the local position over Z axis with azimuth
-    pt_local_cart = myrotate([0,0,90-azim], pt_local_cart3);
+    % Convert from local coordinates to geodetic and geocentric cartesian
+    [pt_geoc_cart, pt_geod] = convert_from_local_cart2 (pt_local_cart-pos_ant_local, base_geod, ell);
     
-    % Convert to geocentric cartesian and geodetic coordinates
-    [pt_geoc_cart, pt_geod] = convert_from_local_cart2 (pt_local_cart, base_geod, ell);
 end

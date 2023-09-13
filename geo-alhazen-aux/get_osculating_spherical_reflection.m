@@ -28,17 +28,26 @@ get_osculating_spherical_reflection (base_geod, azim, e, Ha, Ht, algorithm, traj
 %%   
    ell = get_ellipsoid(ell_name); 
    Rs = get_radius_surface (base_geod(1), hs, ell);
-   frame = 'quasigeo';
+   frame = 'local';
    
+   if strcmp (frame,'quasigeo')
+       pt_origin_local = [0 0 -Rs];
+       pt_ant_local = [0 0 Rs+Ha];
+   elseif strcmp (frame,'local')
+       pt_origin_local = [0 0 0];
+       pt_ant_local = [0 0 Ha];
+   end
+       
    %% Compute reflection on quasi-geocentric frame
    [delay, graz_ang, arc_len, slant_dist, x_spec, y_spec, x_trans, y_trans, elev_spec] = ...
             get_reflection_spherical(e, Ha, Ht, Rs, algorithm, trajectory, frame);
    pos_spec = struct();
    [~,n] = size(Ha);
    
+   %% Convert coordinates from local cartesian to geodetic and geocentric
    for i=1:n
        pt_local_cart2 = [x_spec(:,i) y_spec(:,i)];
-       [pt_geoc_cart, pt_geod, pt_local_cart] = convert_from_local_cart3 (azim, pt_local_cart2, base_geod(i,:), ell);
+       [pt_geoc_cart, pt_geod, pt_local_cart] = convert_from_local_cart3 (azim, pt_local_cart2, pt_ant_local, base_geod(i,:), ell);
        
        % Position on geocentric cartesian frame
        pos_spec.geocart.x(:,i) = pt_geoc_cart(:,1);
@@ -54,18 +63,6 @@ get_osculating_spherical_reflection (base_geod, azim, e, Ha, Ht, algorithm, traj
        pos_spec.geod.lat(:,i) = pt_geod(:,1);
        pos_spec.geod.long(:,i) = pt_geod(:,2);
        pos_spec.geod.h(:,i) = pt_geod(:,3);
+       
    end
-   
-   %% Transform the origin  #test    
-%    [pos_cart_base0, Rg] = get_sphere_osculating (base_geod, ell); % cartesian base point
-%    lat0 = deg2rad(pos_cart_base0(:,1));
-%    long0 = deg2rad(pos_cart_base0(:,2));
-%    h0 = pos_cart_base0(:,3);
-%    
-%    n0 = compute_prime_vertical_radius (lat0, ell);
-%    pos_cart_center0 = pos_cart_base0 - Rs.*n0; % cartesian center (through eq. 36 of dissertation)
-%    assignin('base','pos_center',pos_cart_center0);
-%    assignin('base','pos_ant',pos_cart_base0);
-   
-   
 end
