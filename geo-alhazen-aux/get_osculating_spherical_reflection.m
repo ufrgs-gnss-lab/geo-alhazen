@@ -1,4 +1,4 @@
-function [pos_spec, delay, graz_ang, arc_len, slant_dist, x_spec, y_spec, x_trans, y_trans, elev_spec] = ...
+function [pos_spec, delay, graz_ang, arc_len, slant_dist, x_spec_local, y_spec_local, x_trans, y_trans, elev_spec] = ...
 get_osculating_spherical_reflection (base_geod, azim, e, Ha, Ht, algorithm, trajectory, ell_name, hs)
 % GET_OSCULATING_SPHERICAL_REFLECTION Calculates specular reflection on
 % an osculating sphere and retrieve the specular reflection point on
@@ -31,38 +31,60 @@ get_osculating_spherical_reflection (base_geod, azim, e, Ha, Ht, algorithm, traj
    frame = 'local';
    
    if strcmp (frame,'quasigeo')
-       pt_origin_local = [0 0 -Rs];
-       pt_ant_local = [0 0 Rs+Ha];
-   elseif strcmp (frame,'local')
-       pt_origin_local = [0 0 0];
-       pt_ant_local = [0 0 Ha];
+       Ha = Rs+Ha;
+%        pt_ant_local = [0 0 Rs+Ha];
    end
        
    %% Compute reflection on quasi-geocentric frame
-   [delay, graz_ang, arc_len, slant_dist, x_spec, y_spec, x_trans, y_trans, elev_spec] = ...
+   [delay, graz_ang, arc_len, slant_dist, x_spec_local, y_spec_local, x_trans, y_trans, elev_spec] = ...
             get_reflection_spherical(e, Ha, Ht, Rs, algorithm, trajectory, frame);
    pos_spec = struct();
    [~,n] = size(Ha);
-   
+   [m,~] = size(e);
    %% Convert coordinates from local cartesian to geodetic and geocentric
    for i=1:n
-       pt_local_cart2 = [x_spec(:,i) y_spec(:,i)];
-       [pt_geoc_cart, pt_geod, pt_local_cart] = convert_from_local_cart3 (azim, pt_local_cart2, pt_ant_local, base_geod(i,:), ell);
+       for j=1:m
+           pt_ant_local = [0 0 Ha(j,i)];
+           
+           pt_local_cart2 = [x_spec_local(j,i) y_spec_local(j,i)];
+           
+           [pt_geoc_cart, pt_geod, pt_local_cart] = convert_from_local_cart3 (azim, pt_local_cart2, pt_ant_local, base_geod(i,:), ell);
+           
+           % 3D Position on geocentric cartesian frame
+           pos_spec.geocart.x(j,i) = pt_geoc_cart(:,1);
+           pos_spec.geocart.y(j,i) = pt_geoc_cart(:,2);
+           pos_spec.geocart.z(j,i) = pt_geoc_cart(:,3);
+           
+           % 3D Position on local quasigeocentric cartesian frame
+           pos_spec.localcart.x(j,i) = pt_local_cart(:,1);
+           pos_spec.localcart.y(j,i) = pt_local_cart(:,2);
+           pos_spec.localcart.z(j,i) = pt_local_cart(:,3);
+           
+           % 3D Position on geodectic frame
+           pos_spec.geod.lat(j,i) = pt_geod(:,1);
+           pos_spec.geod.long(j,i) = pt_geod(:,2);
+           pos_spec.geod.h(j,i) = pt_geod(:,3);
        
-       % Position on geocentric cartesian frame
-       pos_spec.geocart.x(:,i) = pt_geoc_cart(:,1);
-       pos_spec.geocart.y(:,i) = pt_geoc_cart(:,2);
-       pos_spec.geocart.z(:,i) = pt_geoc_cart(:,3);
-       
-       % Position on local quasigeocentric cartesian frame
-       pos_spec.qgeocart.x(:,i) = pt_local_cart(:,1);
-       pos_spec.qgeocart.y(:,i) = pt_local_cart(:,2);
-       pos_spec.qgeocart.z(:,i) = pt_local_cart(:,3);
-       
-       % Position on geodectic frame
-       pos_spec.geod.lat(:,i) = pt_geod(:,1);
-       pos_spec.geod.long(:,i) = pt_geod(:,2);
-       pos_spec.geod.h(:,i) = pt_geod(:,3);
-       
+       end
    end
+%        pt_ant_local = [0 0 Rs+Ha()];
+%        
+%        pt_local_cart2 = [x_spec_local(:,i) y_spec_local(:,i)];
+%        [pt_geoc_cart, pt_geod, pt_local_cart] = convert_from_local_cart3 (azim, pt_local_cart2, pt_ant_local, base_geod(i,:), ell);
+%        
+%        % 3D Position on geocentric cartesian frame
+%        pos_spec.geocart.x(:,i) = pt_geoc_cart(:,1);
+%        pos_spec.geocart.y(:,i) = pt_geoc_cart(:,2);
+%        pos_spec.geocart.z(:,i) = pt_geoc_cart(:,3);
+%        
+%        % 3D Position on local quasigeocentric cartesian frame
+%        pos_spec.localcart.x(:,i) = pt_local_cart(:,1);
+%        pos_spec.localcart.y(:,i) = pt_local_cart(:,2);
+%        pos_spec.localcart.z(:,i) = pt_local_cart(:,3);
+%        
+%        % 3D Position on geodectic frame
+%        pos_spec.geod.lat(:,i) = pt_geod(:,1);
+%        pos_spec.geod.long(:,i) = pt_geod(:,2);
+%        pos_spec.geod.h(:,i) = pt_geod(:,3);
+       
 end
