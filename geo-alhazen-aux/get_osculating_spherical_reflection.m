@@ -32,7 +32,6 @@ get_osculating_spherical_reflection (base_geod, azim, e, Ha, Ht, algorithm, traj
    
    if strcmp (frame,'quasigeo')
        Ha = Rs+Ha;
-%        pt_ant_local = [0 0 Rs+Ha];
    end
        
    %% Compute reflection on quasi-geocentric frame
@@ -45,10 +44,10 @@ get_osculating_spherical_reflection (base_geod, azim, e, Ha, Ht, algorithm, traj
    for i=1:n
        for j=1:m
            pt_ant_local = [0 0 Ha(j,i)];
-           
            pt_local_cart2 = [x_spec_local(j,i) y_spec_local(j,i)];
+           az = azim(j,i);
            
-           [pt_geoc_cart, pt_geod, pt_local_cart] = convert_from_local_cart3 (azim, pt_local_cart2, pt_ant_local, base_geod(i,:), ell);
+           [pt_geoc_cart, pt_geod, pt_local_cart] = convert_from_local_cart3 (az, pt_local_cart2, pt_ant_local, base_geod(i,:), ell);
            
            % 3D Position on geocentric cartesian frame
            pos_spec.geocart.x(j,i) = pt_geoc_cart(:,1);
@@ -67,24 +66,5 @@ get_osculating_spherical_reflection (base_geod, azim, e, Ha, Ht, algorithm, traj
        
        end
    end
-%        pt_ant_local = [0 0 Rs+Ha()];
-%        
-%        pt_local_cart2 = [x_spec_local(:,i) y_spec_local(:,i)];
-%        [pt_geoc_cart, pt_geod, pt_local_cart] = convert_from_local_cart3 (azim, pt_local_cart2, pt_ant_local, base_geod(i,:), ell);
-%        
-%        % 3D Position on geocentric cartesian frame
-%        pos_spec.geocart.x(:,i) = pt_geoc_cart(:,1);
-%        pos_spec.geocart.y(:,i) = pt_geoc_cart(:,2);
-%        pos_spec.geocart.z(:,i) = pt_geoc_cart(:,3);
-%        
-%        % 3D Position on local quasigeocentric cartesian frame
-%        pos_spec.localcart.x(:,i) = pt_local_cart(:,1);
-%        pos_spec.localcart.y(:,i) = pt_local_cart(:,2);
-%        pos_spec.localcart.z(:,i) = pt_local_cart(:,3);
-%        
-%        % 3D Position on geodectic frame
-%        pos_spec.geod.lat(:,i) = pt_geod(:,1);
-%        pos_spec.geod.long(:,i) = pt_geod(:,2);
-%        pos_spec.geod.h(:,i) = pt_geod(:,3);
        
 end

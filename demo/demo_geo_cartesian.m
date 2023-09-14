@@ -8,7 +8,7 @@ H = 10;
 [~,n]=size(H);
 [e_grid, H_grid]=ndgrid(e,H);
 pos_ant_geod = zeros (n,3);
-azim = 45;
+azim = repmat(45, size(e_grid));
 ell = 'wgs84';
 
 %% Computation
