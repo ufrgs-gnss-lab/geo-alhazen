@@ -1,7 +1,22 @@
 function [graz_ang, geo_ang, x_spec, y_spec, x_trans, y_trans] = get_reflection_spherical_vuorinen (e, Ha, Ht, Rs)
 
-% GET_REFLECTION_SPHERICAL_FUJIMURA Calculates reflection on spherical 
+% GET_REFLECTION_SPHERICAL_VUORINEN Calculates reflection on spherical 
 % surface based on Vuorinen (2023) equations (internal document - filename cal20230511.tex)
+%
+% On the Ptolemy-Alhazen problem: source at infinite distance. 2023, May
+% 11. Internal document. 
+% 
+% INPUT:
+% - Ha: antenna/receiver height (in meters)
+% - e: elevation angle (in radians)
+% - Ht: Transmitter/satelitte height (in meters)
+% - Rs: Earth radius (in meters)
+% 
+% OUTPUT:
+% - x_spec, y_spec: reflection point in local frame (vectors, in meters)
+% - x_trans, y_trans: transmitter point in local frame (vectors, in meters)
+% - graz_ang: grazing angle of spherical reflection that satisfies Snell's Law (in degrees)
+% - geo_ang: geocentric angle between receiver and reflection point (in degrees) 
 
 % Antenna radius
 Ra = Rs+Ha;
