@@ -40,7 +40,6 @@ function [delay, graz_ang, arc_len, slant_dist, x_spec, y_spec, x_trans, y_trans
 %   'itu' (under research)
 %   'line-sphere fermat' (under research)
 %   'circle inversion' (under research)
-%   'vuorinen'
 % - trajectory: (char), see source code for details
 %   'orbital'  % orbital trajectory (constant geocentric distance)
 %   'horizontal'  % horizontal trajectory (constant y-axis coordinate)
@@ -83,8 +82,6 @@ function [delay, graz_ang, arc_len, slant_dist, x_spec, y_spec, x_trans, y_trans
             f = @get_reflection_spherical_helm;
          case {'fermat','numerical'}
             f = @get_reflection_spherical_fermat;
-        case {'vuorinen'}
-            f = @get_reflection_spherical_vuorinen;
         otherwise
             error('Unknown algorithm "%s"', char(algorithm));
     end
