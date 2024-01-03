@@ -13,6 +13,6 @@ function geo_ang = get_geocentric_angle_vec (pos_ant, pos)
 
 %% Geocentric Angle:
 temp = dot_all(pos, pos_ant)./(norm_all(pos).*norm_all(pos_ant));
-geo_ang = (acosd(temp));
+geo_ang = acosd(temp);
 
 end

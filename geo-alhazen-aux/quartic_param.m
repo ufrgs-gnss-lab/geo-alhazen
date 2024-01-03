@@ -3,6 +3,12 @@ function [c0,c1,c2,c3,c4,t0,gamma0] = quartic_param (pos_ant, pos_sat, Rs)
 % Return parameters (coefficients and starting estimate value)
 % of quartic polynomial for Martin-Neira (1993) and Helm (2008) equations
 
+%% Normalize vectors closer to unit circle:
+R0 = Rs;
+Rs = 1;  % Rs./R0;
+pos_ant = pos_ant./R0;
+pos_sat = pos_sat./R0;
+
 %%
 xt=pos_sat(1); % X coordinate of transmitter/satellite
 yt=pos_sat(2); % Y coordinate of transmitter/satellite

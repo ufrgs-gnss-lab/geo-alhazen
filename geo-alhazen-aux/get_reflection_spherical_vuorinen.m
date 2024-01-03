@@ -1,4 +1,4 @@
-function [graz_ang, geo_ang, x_spec, y_spec, x_trans, y_trans] = get_reflection_spherical_vuorinen (e, Ha, Ht, Rs)
+function [graz_ang, geo_ang_as, x_spec, y_spec, x_trans, y_trans] = get_reflection_spherical_vuorinen (e, Ha, Ht, Rs)
 
 % GET_REFLECTION_SPHERICAL_VUORINEN Calculates reflection on spherical 
 % surface based on Vuorinen (2023) equations (internal document - filename cal20230511.tex)
@@ -16,7 +16,7 @@ function [graz_ang, geo_ang, x_spec, y_spec, x_trans, y_trans] = get_reflection_
 % - x_spec, y_spec: reflection point in local frame (vectors, in meters)
 % - x_trans, y_trans: transmitter point in local frame (vectors, in meters)
 % - graz_ang: grazing angle of spherical reflection that satisfies Snell's Law (in degrees)
-% - geo_ang: geocentric angle between receiver and reflection point (in degrees) 
+% - geo_ang_as: geocentric angle between antenna and reflection point (in degrees) 
 
 % Antenna radius
 Ra = Rs+Ha;
@@ -62,4 +62,4 @@ pos_ant = [0 Ra];
 graz_ang = get_grazing_angle_vector (pos_ant,pos_spec,pos_trans);
 
 % Geocentric angle
-geo_ang = deg2rad (theta-phis(ind));
+geo_ang_as = deg2rad (theta-phis(ind));

@@ -107,13 +107,13 @@ function [delay, graz_ang, arc_len, slant_dist, x_spec, y_spec, x_trans, y_trans
     for i=1:n
         if (n2>1),  i2 = i;  end
         if (e(i) < ehor(i2)),  continue;  end
-        [graz_ang(i), geo_ang(i), x_spec(i), y_spec(i), x_trans(i), y_trans(i)] = f(...
+        [graz_ang(i), geo_ang_as(i), x_spec(i), y_spec(i), x_trans(i), y_trans(i)] = f(...
             e(i), Ha(i2), Hts(i), Rs);        
     end
 
     %% Additional parameters
     [delay, arc_len, slant_dist, elev_spec, delay_direct] = get_spherical_reflection_extra (...
-        n2, Ha, Rs, geo_ang, x_spec, y_spec, x_trans, y_trans);
+        n2, Ha, Rs, geo_ang_as, x_spec, y_spec, x_trans, y_trans);
 
     %% Reshape output matrices as in input matrices:
     delay = reshape(delay, siz);
@@ -134,10 +134,10 @@ function [delay, graz_ang, arc_len, slant_dist, x_spec, y_spec, x_trans, y_trans
 end
 
 %%
-function [delay, arc_len, slant_dist, elev_spec, delay_direct] = get_spherical_reflection_extra (n2, Ha, Rs, geo_ang, x_spec, y_spec, x_trans, y_trans)
+function [delay, arc_len, slant_dist, elev_spec, delay_direct] = get_spherical_reflection_extra (n2, Ha, Rs, geo_ang_as, x_spec, y_spec, x_trans, y_trans)
 
     % Arc Length from subreceiver point to reflection point:
-    arc_len = deg2rad(geo_ang)*Rs;
+    arc_len = deg2rad(geo_ang_as)*Rs;
 
     % Receiving antenna position vector in local frame:
     pos_ant = [zeros(n2,1) Ha]; 
