@@ -2,7 +2,7 @@
 
 Ha_dom = 10;
 ehor = get_spherical_reflection_horizon_elev (Ha_dom);
-e_dom = ehor:1:90;
+e_dom = [ehor 0:1:90];
 [e_grid, Ha_grid] = ndgrid (e_dom, Ha_dom);
 frame = 'quasigeo';
 

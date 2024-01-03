@@ -1,4 +1,4 @@
-function [graz_ang, geo_ang, x_spec, y_spec, x_trans, y_trans] = get_reflection_spherical_helm (e, Ha, Ht, Rs)
+function [graz_ang, geo_ang_as, x_spec, y_spec, x_trans, y_trans] = get_reflection_spherical_helm (e, Ha, Ht, Rs)
 
 % GET_REFLECTION_SPHERICAL_HELM Calculates reflection on spherical 
 % surface based on Helm (2008) equations.
@@ -20,7 +20,7 @@ function [graz_ang, geo_ang, x_spec, y_spec, x_trans, y_trans] = get_reflection_
 % - x_spec, y_spec: reflection point in local frame (vectors, in meters)
 % - x_trans, y_trans: transmitter point in local frame (vectors, in meters)
 % - graz_ang: grazing angle of spherical reflection that satisfies Snell's Law (in degrees)
-% - geo_ang: geocentric angle between receiver and reflection point (in degrees) 
+% - geo_ang_as: geocentric angle between antenna and reflection point (in degrees) 
 
 %% quasigeocentric origin
 pos_cnt_loc = [0 -Rs];
@@ -82,4 +82,4 @@ y_spec = pos_spec_loc(2);
 graz_ang = 90-(gamma-e);
 
 %% Geocentric angle between reflection point and subreceiver (phi1)
-geo_ang = get_geocentric_angle (Ha,Ht,e,graz_ang,Rs);
+geo_ang_as = get_geocentric_angle_sfc (Ha,graz_ang,Rs);

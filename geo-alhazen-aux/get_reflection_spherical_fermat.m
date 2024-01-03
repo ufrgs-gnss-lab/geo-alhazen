@@ -1,4 +1,4 @@
-function [graz_ang, geo_ang, x_spec, y_spec, x_trans, y_trans] = get_reflection_spherical_fermat (e, Ha, Ht, Rs)
+function [graz_ang, geo_ang_as, x_spec, y_spec, x_trans, y_trans] = get_reflection_spherical_fermat (e, Ha, Ht, Rs)
 
 % GET_REFLECTION_SPHERICAL_FUJIMURA Calculates reflection on spherical 
 % surface with a numerical method based on Fermat's principle of least time
@@ -13,7 +13,7 @@ function [graz_ang, geo_ang, x_spec, y_spec, x_trans, y_trans] = get_reflection_
 % - x_spec, y_spec: reflection point in local frame (vectors, in meters)
 % - x_trans, y_trans: transmitter point in local frame (vectors, in meters)
 % - graz_ang: grazing angle of spherical reflection that satisfies Snell's Law (in degrees)
-% - geo_ang: geocentric angle between receiver and reflection point (in degrees) 
+% - geo_ang_as: geocentric angle between antenna and reflection point (in degrees) 
 
 
 %% Interferometric delay 
@@ -58,6 +58,7 @@ x_trans = pos_trans_loc(1);
 y_trans = pos_trans_loc(2);
 
 %% Iterations
+% opt = struct('MaxIter',1000, 'TolX',1e-6, 'TolFun',1e-6, 'PlotFcns', @optimplotfunccount); 
 opt = struct('MaxIter',1000, 'TolX',1e-6, 'TolFun',1e-6); %fminsearch optmization options 
 f = @(x) get_dist_reflect(pos_ant, pos_trans_loc, get_pos_spec(x, Rs)); % Function minimized 
 
@@ -74,4 +75,4 @@ y_spec = pos_spec_loc(2);
 graz_ang = real(get_grazing_angle_vector (pos_ant,pos_spec_loc,pos_trans_loc));
 
 %% Geocentric angle
-geo_ang = get_geocentric_angle (Ha,Ht,e,graz_ang,Rs);
+geo_ang_as = get_geocentric_angle_sfc (Ha,graz_ang,Rs);

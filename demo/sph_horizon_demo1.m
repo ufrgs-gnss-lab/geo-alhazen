@@ -41,12 +41,12 @@ dif_sd = sldist - sldistref;
 dif_al = arclen - arclenref;
 
 %% RMSE
-rmse (1,:) = sqrt (sum(dif_g,1).^2 /numel(Has));
-rmse (2,:) = sqrt (sum(dif_Di,1).^2/numel(Has));
-rmse (3,:) = sqrt (sum(dif_X,1).^2./numel(Has));
-rmse (4,:) = sqrt (sum(dif_Y,1).^2 /numel(Has));
-rmse (5,:) = sqrt (sum(dif_sd,1).^2/numel(Has));
-rmse (6,:) = sqrt (sum(dif_al,1).^2/numel(Has));
+rmse (1,:) = sqrt (sum(dif_Di,1).^2/numel(Has));
+rmse (2,:) = sqrt (sum(dif_g,1).^2 /numel(Has));
+rmse (3,:) = sqrt (sum(dif_al,1).^2/numel(Has));
+rmse (4,:) = sqrt (sum(dif_sd,1).^2/numel(Has));
+rmse (5,:) = sqrt (sum(dif_X,1).^2./numel(Has));
+rmse (6,:) = sqrt (sum(dif_Y,1).^2 /numel(Has));
 
 %% Tables
 
@@ -68,4 +68,4 @@ tbl_dal = array2table (dif_al, 'VariableNames',algs);
 
 % RMSE
 tbl_rmse = array2table (rmse, 'VariableNames',algs, ...
-                        'RowNames',{'Graz. angle','Delay','X coord.','Y coord.','Slant dist.','Arc Len.'});
+                        'RowNames',{'Delay','Graz. angle','Arc Len.','Slant dist.','X coord.','Y coord.'});

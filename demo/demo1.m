@@ -2,7 +2,7 @@
 % Computation of specular reflections on a sphere: Assessment and validation based on the spherical horizon
 % Authors: V.H. Almeida Junior and F. Geremia-Nievinski.
 
-setup_spherical_reflection () % Initial setup
+setup_spherical_reflection() % Initial setup
 
 %% Input values
 Has = [10 50 100 200 300 500 1000];
@@ -18,8 +18,8 @@ Di = tmp;
 g = tmp;
 arclen = tmp;
 sldist = tmp;
-xspec = tmp;
-yspec = tmp;
+X_spec = tmp;
+Y_spec = tmp;
 
 %% Computation of parameters for each algorithm
 for i=1:m
