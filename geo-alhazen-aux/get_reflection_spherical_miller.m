@@ -35,7 +35,8 @@ e_rad = deg2rad(e); % elevation angle should be in radians
 %% Quartic poynomial solution
 % spheric-centric angle (phi) - Fig.1, p.473
 % (law of cosines at the center of sphere)
-[~,geo_ang_at] = get_geocentric_angle (Ha,Ht,rad2deg(e_rad),0,Rs); %geocentric angle between antenna and transmitter
+geo_ang_at = get_geocentric_angle_trans (Ha,rad2deg(e_rad),Ht,Rs); %geocentric angle between antenna and transmitter
+geo_ang_at = deg2rad (geo_ang_at);
 
 k1=Rs./(Rs+Ha);  % mid p.473
 k2=Rs./(Rs+Ht);  % mid p.473
