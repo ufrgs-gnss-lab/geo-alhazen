@@ -6,8 +6,8 @@ function [delay, graz_ang, arc_len, slant_dist, x_spec, y_spec, x_trans, y_trans
 % - e: transmitter elevation angles (matrix; in degrees) 
 % - Ha: receiver antenna height (matrix; in meters)
 % Notes: 
+% - transmitter elevation angle is defined 90? at zenith or zero at the tangent plane horizon, as seen from the receiver antenna; it may be negative.
 % - transmitter elevation angle is defined 90° at zenith or zero at the tangent plane horizon, as seen from the receiver antenna; it may be negative.
-% - transmitter elevation angle is defined 90Â° at zenith or zero at the tangent plane horizon, as seen from the receiver antenna; it may be negative.
 % - matrix input may also be a vector or a scalar
 % - non-scalar input must have the same size
 % 
@@ -20,11 +20,9 @@ function [delay, graz_ang, arc_len, slant_dist, x_spec, y_spec, x_trans, y_trans
 % - x_trans, y_trans: transmitter point coordinates (matrices, in meters)
 % - elev_spec: elevation angle from antenna to reflection point (matrix, in degrees)
 % - delay_direct: direct distance from antenna to satellite
+% 
 % Notes: 
 % - grazing angle is defined 90° at zenith or zero at the tangent plane horizon, as seen from the reflection point; 
-% - delay_trig: trigonometric formulation of interferometric propagation delay (matrix, in meters)
-% Notes: 
-% - grazing angle is defined 90Â° at zenith or zero at the tangent plane horizon, as seen from the reflection point; 
 %   it is the same to the transmitter or to the receiver, as it satisfies Snell's law; it is never negative.
 % - output will be a matrix of the same size as input.
 % 
@@ -32,19 +30,19 @@ function [delay, graz_ang, arc_len, slant_dist, x_spec, y_spec, x_trans, y_trans
 % - Ht: Transmitter/satelitte height (scalar, in meters)
 % - Rs: Earth surface radius (scalar, in meters)
 % - algorithm: (char), see source code for details
-%   'fujimura'
-%   'martin-neira'
-%   'miller&vegh'
-%   'helm'
-%   'fermat'
-%   'itu' (under research)
-%   'line-sphere fermat' (under research)
-%   'circle inversion' (under research)
-%   'vuorinen'
+%       'fujimura'
+%       'martin-neira'
+%       'miller&vegh'
+%       'helm'
+%       'fermat'
+%       'itu' (under research)
+%       'line-sphere fermat' (under research)
+%       'circle inversion' (under research)
+%       'vuorinen' (finite distance)
 % - trajectory: (char), see source code for details
-%   'orbital'  % orbital trajectory (constant geocentric distance)
-%   'horizontal'  % horizontal trajectory (constant y-axis coordinate)
-%   'circular'  % circular trajectory around the receiving antenna (constant direct distance)
+%       'orbital'  % orbital trajectory (constant geocentric distance)
+%       'horizontal'  % horizontal trajectory (constant y-axis coordinate)
+%       'circular'  % circular trajectory around the receiving antenna (constant direct distance)
 % - frame: (char) coordinate reference frame ('local' - default - or 'quasigeo')
 
     if (nargin < 1),  e = [];  end
@@ -72,6 +70,7 @@ function [delay, graz_ang, arc_len, slant_dist, x_spec, y_spec, x_trans, y_trans
     %assert(isscalar(Ha) || isequal(size(Ha), size(e)))
 
     %% Select algorithm
+    is_finite = true;
     switch lower(algorithm)
         case {'fujimura'}
             f = @get_reflection_spherical_fujimura;
@@ -84,7 +83,12 @@ function [delay, graz_ang, arc_len, slant_dist, x_spec, y_spec, x_trans, y_trans
          case {'fermat','numerical'}
             f = @get_reflection_spherical_fermat;
         case {'vuorinen'}
-            f = @get_reflection_spherical_vuorinen;
+            %f = @get_reflection_spherical_vuorinen;
+            f = @(ei, Hai, Htsi, Rs) get_reflection_spherical_vuorinen(ei, Hai, Rs);
+            is_finite = false;
+        case {'vuorinen2'}
+            %f = @get_reflection_spherical_vuorinen;
+            f = @get_reflection_spherical_vuorinen_old;
         otherwise
             error('Unknown algorithm "%s"', char(algorithm));
     end
@@ -108,12 +112,12 @@ function [delay, graz_ang, arc_len, slant_dist, x_spec, y_spec, x_trans, y_trans
         if (n2>1),  i2 = i;  end
         if (e(i) < ehor(i2)),  continue;  end
         [graz_ang(i), geo_ang_as(i), x_spec(i), y_spec(i), x_trans(i), y_trans(i)] = f(...
-            e(i), Ha(i2), Hts(i), Rs);        
+            e(i), Ha(i2), Hts(i), Rs);
     end
 
     %% Additional parameters
     [delay, arc_len, slant_dist, elev_spec, delay_direct] = get_spherical_reflection_extra (...
-        n2, Ha, Rs, geo_ang_as, x_spec, y_spec, x_trans, y_trans);
+        n2, Ha, Rs, geo_ang_as, x_spec, y_spec, x_trans, y_trans, is_finite);
 
     %% Reshape output matrices as in input matrices:
     delay = reshape(delay, siz);
@@ -134,7 +138,7 @@ function [delay, graz_ang, arc_len, slant_dist, x_spec, y_spec, x_trans, y_trans
 end
 
 %%
-function [delay, arc_len, slant_dist, elev_spec, delay_direct] = get_spherical_reflection_extra (n2, Ha, Rs, geo_ang_as, x_spec, y_spec, x_trans, y_trans)
+function [delay, arc_len, slant_dist, elev_spec, delay_direct] = get_spherical_reflection_extra (n2, Ha, Rs, geo_ang_as, x_spec, y_spec, x_trans, y_trans, is_finite)
 
     % Arc Length from subreceiver point to reflection point:
     arc_len = deg2rad(geo_ang_as)*Rs;
@@ -153,11 +157,21 @@ function [delay, arc_len, slant_dist, elev_spec, delay_direct] = get_spherical_r
     slant_dist = norm_all(pos_ant_spec);
 
     % Interferometric propagation delay:
-    delay_direct = norm_all(pos_ant_trans);
-    delay_reflect_inc = norm_all(pos_trans_spec);
-    delay_reflect_out = norm_all(pos_ant_spec);
-    delay_reflect = delay_reflect_inc + delay_reflect_out;
-    delay = delay_reflect - delay_direct;
+    % (TODO: split into a separate function)
+    if is_finite
+        delay_reflect_out = slant_dist;
+        delay_reflect_inc = norm_all(pos_trans_spec);
+        delay_direct = norm_all(pos_ant_trans);
+        delay_reflect = delay_reflect_inc + delay_reflect_out;
+        delay = delay_reflect - delay_direct;
+    else
+        dir_trans = [x_trans, y_trans]; % In finite case, x_trans and y_trans are unit directions
+        delay_reflect_out = slant_dist;
+        [~, delay_direct_aux] = proj_pt_line (pos_spec, pos_ant, dir_trans);
+%         delay = pos_ant_spec - delay_direct_aux;
+        delay = delay_reflect_out - delay_direct_aux;
+        delay_direct = inf(size(delay));
+    end
 
     % Reflection elevation angle:
     dir_rec_spec = pos_ant_spec./delay_reflect_out;
@@ -194,19 +208,22 @@ function Hts = get_satellite_trajectory (e, Ha, Ht, R0, trajectory)
 
     %% transmitting satellite's trajectory:
     switch lower(trajectory)
-        case 'orbital'  % orbital trajectory (constant geocentric distance)
+        case 'orbital'  
+            % orbital trajectory (constant geocentric radius, variable direct distance)
             Hts = repmat(Ht, [n 1]);
-        case 'horizontal'  % horizontal trajectory (constant y-axis coordinate)
-            vert_dist = (Ht-Ha).*ones(n,1);
-            horiz_dist = vert_dist.*cotd(e(:));
-            pos_trans_ant = [horiz_dist vert_dist];
-            pos_trans = pos_ant + pos_trans_ant;
-            pos_trans_geo = pos_trans + pos_foot_geo;
-            Hts = norm_all(pos_trans_geo);
-        case 'circular'  % circular trajectory around the receiving antenna (constant direct distance)
+        case 'circular'  
+            % circular trajectory around the receiving antenna (constant direct distance, variable geocentric radius)
             %pos_trans = Ht.*[cosd(e), sind(e)];  % WRONG!
             direct_dist = Ht - Ha;
             pos_trans_ant = direct_dist.*[cosd(e(:)), sind(e(:))];
+            pos_trans = pos_ant + pos_trans_ant;
+            pos_trans_geo = pos_trans + pos_foot_geo;
+            Hts = norm_all(pos_trans_geo);
+        case 'horizontal'  
+            % horizontal trajectory (constant y-axis coordinate, variable geocentric radius, variable direct distance)
+            vert_dist = (Ht-Ha).*ones(n,1);
+            horiz_dist = vert_dist.*cotd(e(:));
+            pos_trans_ant = [horiz_dist vert_dist];
             pos_trans = pos_ant + pos_trans_ant;
             pos_trans_geo = pos_trans + pos_foot_geo;
             Hts = norm_all(pos_trans_geo);
