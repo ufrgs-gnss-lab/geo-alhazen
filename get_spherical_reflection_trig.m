@@ -1,8 +1,10 @@
 function [Di, sldist, g, gamma, der] = get_spherical_reflection_trig (e, Ha, Rs, optnum)
 
 % GET_SPHERICAL_REFLECTION_TRIG computes interferometric delay and
-% slant distance on a spherical surface with trigonometric formulation
-% based on an assumption of infinite distance of the transmitting satellite.
+% slant distance on a spherical surface with a hybrid trigonometric
+% formulation that is essentially based on assumptions of infinite distance 
+% of the transmitting satellite and uses variables from a finite satellite
+% distance method.
 %
 % INPUT:
 % e: elevation angles (matrix; in degrees) 
@@ -22,7 +24,7 @@ function [Di, sldist, g, gamma, der] = get_spherical_reflection_trig (e, Ha, Rs,
 if (nargin < 3) || isempty(Rs);  Rs = get_earth_radius();  end
 if (nargin < 4) || isempty(optnum);  optnum = struct();  end
 %%
-[g,e_spec] = get_spherical_numerical (e, Ha, Rs, optnum);
+[g,e_spec] = get_spherical_finite (e, Ha, Rs, optnum);
 Ra = Rs+Ha;
 gamma = (Ra./Rs).^2-cosd(g).^2;
 sldist = Rs.*(sqrt(gamma)-sind(g));
@@ -32,7 +34,7 @@ Di = sldist.*(1-cosd(der));
 
 end
 
-function [g,e_spec] = get_spherical_numerical (e, Ha, Rs, optnum)
+function [g,e_spec] = get_spherical_finite (e, Ha, Rs, optnum)
 if isfieldempty (optnum, 'Ht'),  optnum.Ht = [];  end
 if isfieldempty (optnum, 'algorithm'),  optnum.algorithm = [];  end
 if isfieldempty (optnum, 'trajectory'),  optnum.trajectory = [];  end
@@ -42,6 +44,7 @@ algorithm = optnum.algorithm;
 trajectory = optnum.trajectory;
 frame = optnum.frame;
 
-[~, g, ~, ~, ~, ~, ~, ~, e_spec] = get_reflection_spherical (e, Ha, Ht, Rs, algorithm, trajectory, frame);
+[~, g, ~, ~, ~, ~, ~, ~, e_spec] = ...
+    get_reflection_spherical (e, Ha, Ht, Rs, algorithm, trajectory, frame); %Based on finite satellite distance
 
 end
