@@ -1,4 +1,4 @@
-function [graz_ang, geo_ang_as, x_spec, y_spec, dx_trans, dy_trans] = get_reflection_spherical_vuorinen (e, Ha, Rs)
+function [graz_ang, geo_ang_as, x_spec, y_spec, dx_trans, dy_trans] = get_reflection_spherical_vuorinen (e, Ha, Rs, choice_method)
 % GET_REFLECTION_SPHERICAL_VUORINEN Calculates reflection on spherical 
 % surface based on Vuorinen (2023) equations (internal document - filename cal20230511.tex)
 %
@@ -17,6 +17,8 @@ function [graz_ang, geo_ang_as, x_spec, y_spec, dx_trans, dy_trans] = get_reflec
 % - dx_trans, dy_trans: transmitter direction in local frame (unit vector, in meters)
 % - graz_ang: grazing angle of spherical reflection that satisfies Snell's Law (in degrees)
 % - geo_ang_as: geocentric angle between antenna and reflection point (in degrees) 
+
+if (nargin < 4), choice_method = 'heuristic';  end
 
 % Antenna radius
 Ra = Rs+Ha;
@@ -40,29 +42,63 @@ ws = roots ([c4 c3 c2 c1 c0]);
 % Candidate phase angles
 phis = angle(ws);
 
-% Phase angle at reflection point:
-% (TODO: test interf. delay, not phase angle.)
-ind = argmin(abs(phis-theta));
-phi = phis(ind);
-w = ws (ind);
-
-% Geocentric angle at reflection point:
-geo_ang_as = deg2rad (theta-phi);
-
-% Reflection point in a quasigeocentric frame
-pos_spec_complex = w./exp(-1i*(pi./2-theta)).*Rs-complex(0,Rs);
-x_spec = real(pos_spec_complex);
-y_spec = imag(pos_spec_complex);
-pos_spec_geo = [x_spec y_spec];
-
 % Satellite direction (unit vector)
 % in either local or quasigeocentric frames:
 dx_trans = cosd(e);
 dy_trans = sind(e);
 dir_trans = [dx_trans, dy_trans];
 
+%% Root choice process
+if strcmp(choice_method,'heuristic')
+
+    phis2 = phis;
+    phis2(phis>deg2rad(90)) = NaN;
+    ind = argmin(abs(phis2-theta));
+    
+elseif strcmp(choice_method,'rigorous')
+    
+    pos_ant_local = [0 Ha]; 
+    di0 = 3*(Ha);
+
+    for i=1:numel (ws)
+
+       w1 = ws(i);
+       pos_spec1 = pos_spec_complex (w1, theta, Rs);
+       slant_dist = norm_all(pos_ant_local - pos_spec1);
+       [~, delay_direct_aux] = proj_pt_line (pos_spec1, pos_ant_local, dir_trans);
+       di1 = slant_dist - delay_direct_aux;
+
+       if di1<di0
+           di0 = di1; 
+           ind0 = i;
+       end
+    end
+    ind = ind0;
+end
+
+w = ws(ind);
+phi = phis(ind);
+%%
+% Geocentric angle at reflection point:
+geo_ang_as = deg2rad (theta-phi);
+
+% Reflection point in a quasigeocentric frame
+[~, x_spec, y_spec] = pos_spec_complex (w, theta, Rs);
+pos_spec_geo = [x_spec y_spec+Rs];
+
 % Antenna geocentric position
-pos_ant_geo = [0 Ra]; 
+pos_ant_geo = [0 Ra];
 
 % Grazing angle
 graz_ang = get_grazing_angle_infinite (pos_ant_geo, pos_spec_geo, dir_trans);
+
+end 
+
+function [pos_spec, x_spec, y_spec] = pos_spec_complex (w, theta, Rs)
+
+pos_spec_complex = w./exp(-1i*(pi./2-theta)).*Rs-complex(0,Rs);
+x_spec = real(pos_spec_complex);
+y_spec = imag(pos_spec_complex);
+pos_spec = [x_spec, y_spec];
+
+end
