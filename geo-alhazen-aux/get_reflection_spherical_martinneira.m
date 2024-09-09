@@ -51,4 +51,4 @@ y_spec = pos_spec_loc(2);
 graz_ang = 90-(gamma-e);
 
 %% Geocentric angle between reflection point and subreceiver (phi1)
-geo_ang_as = get_geocentric_angle (Ha,graz_ang,Rs);
+geo_ang_as = get_geocentric_angle_sfc (Ha,graz_ang,Rs);
