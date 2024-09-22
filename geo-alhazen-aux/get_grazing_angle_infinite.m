@@ -26,10 +26,11 @@ dir_ant_sfc = pos_ant_sfc ./ norm_all(pos_ant_sfc);
 rst = acosd(dot_all(dir_ant_sfc, dir_sat));
 
 % grazing angle:
-g = rst - 90;
+g = 0.5*rst;
 
 if (nargout < 2),  return;  end
 
+% NOT TESTED
 % vertical direction at the surface reflection point:
 pos_sfc_geocenter = pos_spec - pos_geocenter;
 dir_vert = pos_sfc_geocenter ./ norm_all(pos_sfc_geocenter);
