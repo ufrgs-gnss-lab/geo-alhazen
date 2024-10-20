@@ -82,13 +82,14 @@ function [delay, graz_ang, arc_len, slant_dist, x_spec, y_spec, x_trans, y_trans
             f = @get_reflection_spherical_helm;
          case {'fermat','numerical'}
             f = @get_reflection_spherical_fermat;
-        case {'vuorinen'}
-            %f = @get_reflection_spherical_vuorinen;
+        case {'vuorinen','vuorinen heuristic'}
             f = @(ei, Hai, Htsi, Rs) get_reflection_spherical_vuorinen(ei, Hai, Rs);
             is_finite = false;
-        case {'vuorinen2'}
-            %f = @get_reflection_spherical_vuorinen;
-            f = @get_reflection_spherical_vuorinen_old;
+        case {'vuorinen rigorous'}
+            % Rigorous method for root choice
+            choice_method = 'rigorous';
+            f = @(ei, Hai, Htsi, Rs) get_reflection_spherical_vuorinen(ei, Hai, Rs,choice_method);
+            is_finite = false;
         otherwise
             error('Unknown algorithm "%s"', char(algorithm));
     end
@@ -110,10 +111,26 @@ function [delay, graz_ang, arc_len, slant_dist, x_spec, y_spec, x_trans, y_trans
     i2 = 1;
     for i=1:n
         if (n2>1),  i2 = i;  end
-        if (e(i) < ehor(i2)),  continue;  end
+        if (e(i) < ehor(i2) & true(is_finite))
+            graz_ang(i)=NaN; 
+            geo_ang_as(i)=NaN; 
+            x_spec(i)=NaN;
+            y_spec(i)=NaN; 
+            x_trans(i)=NaN; 
+            y_trans(i)=NaN;  
+            continue  
+        end
         [graz_ang(i), geo_ang_as(i), x_spec(i), y_spec(i), x_trans(i), y_trans(i)] = f(...
             e(i), Ha(i2), Hts(i), Rs);
     end
+
+%     i2 = 1;
+%     for i=1:n
+%         if (n2>1),  i2 = i;  end
+%         if (e(i) < ehor(i2)),  continue;  end
+%         [graz_ang(i), geo_ang_as(i), x_spec(i), y_spec(i), x_trans(i), y_trans(i)] = f(...
+%             e(i), Ha(i2), Hts(i), Rs);        
+%     end
 
     %% Additional parameters
     [delay, arc_len, slant_dist, elev_spec, delay_direct] = get_spherical_reflection_extra (...
@@ -166,10 +183,7 @@ function [delay, arc_len, slant_dist, elev_spec, delay_direct] = get_spherical_r
         delay = delay_reflect - delay_direct;
     else
         dir_trans = [x_trans, y_trans]; % In finite case, x_trans and y_trans are unit directions
-        delay_reflect_out = slant_dist;
-        [~, delay_direct_aux] = proj_pt_line (pos_spec, pos_ant, dir_trans);
-%         delay = pos_ant_spec - delay_direct_aux;
-        delay = delay_reflect_out - delay_direct_aux;
+        [delay, delay_reflect_out] = get_delay_infinite_trans (pos_spec, pos_ant, dir_trans);
         delay_direct = inf(size(delay));
     end
 

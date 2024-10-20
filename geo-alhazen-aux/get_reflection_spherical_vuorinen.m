@@ -66,7 +66,7 @@ elseif strcmp(choice_method,'rigorous')
 
        w1 = ws(i);
        pos_spec1 = pos_spec_complex (w1, theta, Rs);
-       [di1] = interf_delay_infinite_distance (pos_spec1, pos_ant_local, dir_trans);
+       [di1] = get_delay_infinite_trans (pos_spec1, pos_ant_local, dir_trans);
        
        if di1<di0
            di0 = di1; 
@@ -88,7 +88,7 @@ pos_spec = [x_spec y_spec];
 pos_spec_geo = [x_spec y_spec+Rs];
 
 % Interferometric delay
-[di, slant_dist] = interf_delay_infinite_distance (pos_spec, pos_ant_local, dir_trans);
+[di, slant_dist] = get_delay_infinite_trans (pos_spec, pos_ant_local, dir_trans);
 
 % Antenna geocentric position
 pos_ant_geo = [0 Ra];
@@ -104,13 +104,5 @@ function [pos_spec, x_spec, y_spec] = pos_spec_complex (w, theta, Rs)
     x_spec = real(pos_spec_complex);
     y_spec = imag(pos_spec_complex);
     pos_spec = [x_spec, y_spec];
-
-end
-
-function [di,slant_dist] = interf_delay_infinite_distance (pos_spec, pos_ant_local, dir_trans)
-
-    slant_dist = norm_all(pos_ant_local - pos_spec);
-    [~, delay_direct_aux] = proj_pt_line (pos_spec, pos_ant_local, dir_trans);
-    di = slant_dist - delay_direct_aux;
 
 end
