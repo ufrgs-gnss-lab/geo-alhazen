@@ -16,10 +16,10 @@ function [pt_geoc_cart, pt_geod, pt_local_cart] = convert_from_local_cart3 (az, 
 
 
     n = size(pt_local_cart1,1);
-    pt_local_cart2 = [zeros(n,1) pt_local_cart1(:,1) pt_local_cart1(:,2)];
+    pt_local_cart2 = [pt_local_cart1(:,1) zeros(n,1) pt_local_cart1(:,2)];
     
     % Rotate Z-axis with the azimuth
-    pt_local_cart = (myrotate([0,0,az], pt_local_cart2));
+    pt_local_cart = (myrotate([0,0,-az], pt_local_cart2));
     
     % Convert from local coordinates to geodetic and geocentric cartesian
     [pt_geoc_cart, pt_geod] = convert_from_local_cart2 (pt_local_cart-pos_ant_local, base_geod, ell);
