@@ -90,6 +90,9 @@ function [delay, graz_ang, arc_len, slant_dist, x_spec, y_spec, x_trans, y_trans
             choice_method = 'rigorous';
             f = @(ei, Hai, Htsi, Rs) get_reflection_spherical_vuorinen(ei, Hai, Rs,choice_method);
             is_finite = false;
+        case {'millerinf'}
+            f = @(ei, Hai, Htsi, Rs) get_reflection_spherical_miller_infinite(ei, Hai, Rs);
+            is_finite = false;
         otherwise
             error('Unknown algorithm "%s"', char(algorithm));
     end
@@ -111,7 +114,8 @@ function [delay, graz_ang, arc_len, slant_dist, x_spec, y_spec, x_trans, y_trans
     i2 = 1;
     for i=1:n
         if (n2>1),  i2 = i;  end
-        if (e(i) < ehor(i2) & true(is_finite))
+%         if (e(i) < ehor(i2) & true(is_finite))
+        if (e(i) < ehor(i2))
             graz_ang(i)=NaN; 
             geo_ang_as(i)=NaN; 
             x_spec(i)=NaN;
@@ -134,7 +138,7 @@ function [delay, graz_ang, arc_len, slant_dist, x_spec, y_spec, x_trans, y_trans
 
     %% Additional parameters
     [delay, arc_len, slant_dist, elev_spec, delay_direct] = get_spherical_reflection_extra (...
-        n2, Ha, Rs, geo_ang_as, x_spec, y_spec, x_trans, y_trans, is_finite);
+        n2, Ha, Rs, geo_ang_as, x_spec, y_spec, x_trans, y_trans, graz_ang, is_finite);
 
     %% Reshape output matrices as in input matrices:
     delay = reshape(delay, siz);
@@ -155,7 +159,7 @@ function [delay, graz_ang, arc_len, slant_dist, x_spec, y_spec, x_trans, y_trans
 end
 
 %%
-function [delay, arc_len, slant_dist, elev_spec, delay_direct] = get_spherical_reflection_extra (n2, Ha, Rs, geo_ang_as, x_spec, y_spec, x_trans, y_trans, is_finite)
+function [delay, arc_len, slant_dist, elev_spec, delay_direct] = get_spherical_reflection_extra (n2, Ha, Rs, geo_ang_as, x_spec, y_spec, x_trans, y_trans, graz_ang, is_finite)
 
     % Arc Length from subreceiver point to reflection point:
     arc_len = deg2rad(geo_ang_as)*Rs;
@@ -171,20 +175,24 @@ function [delay, arc_len, slant_dist, elev_spec, delay_direct] = get_spherical_r
     pos_ant_trans  = pos_ant   - pos_trans;
 
     % Slant distance from reflection point to receiver:
-    slant_dist = norm_all(pos_ant_spec);
+%     slant_dist = norm_all(pos_ant_spec);
 
     % Interferometric propagation delay:
     % (TODO: split into a separate function)
     if is_finite
+        slant_dist = norm_all(pos_ant_spec);
         delay_reflect_out = slant_dist;
         delay_reflect_inc = norm_all(pos_trans_spec);
         delay_direct = norm_all(pos_ant_trans);
         delay_reflect = delay_reflect_inc + delay_reflect_out;
-        delay = delay_reflect - delay_direct;
+        delay = delay_reflect - delay_direct; 
     else
+        gamma = ((Rs+Ha)./Rs).^2-cosd(graz_ang).^2;
+        slant_dist = Rs.*(sqrt(gamma)-sind(graz_ang));
         dir_trans = [x_trans, y_trans]; % In finite case, x_trans and y_trans are unit directions
         [delay, delay_reflect_out] = get_delay_infinite_trans (pos_spec, pos_ant, dir_trans);
         delay_direct = inf(size(delay));
+       
     end
 
     % Reflection elevation angle:
