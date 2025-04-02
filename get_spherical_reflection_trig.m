@@ -26,12 +26,15 @@ if (nargin < 4) || isempty(optnum);  optnum = struct();  end
 %%
 [g,e_spec] = get_spherical_finite (e, Ha, Rs, optnum);
 Ra = Rs+Ha;
-gamma = (Ra./Rs).^2-cosd(g).^2;
-sldist = Rs.*(sqrt(gamma)-sind(g));
-der = e-e_spec; % or der = -(-e+e_spec) (master thesis incorrect)
-Di = sldist.*(1-cosd(der));
-% Di1 = sldist.*(1-cosd(2.*e+der)); % #WRONG! (master thesis incorrect)
+gamma = Ra.^2./Rs.^2-cosd(g).^2;
 
+% sldist1 = sqrt(Ra.^2 - Rs.^2.*cosd(g).^2) - Rs.*sind(g); % same sldist
+sldist = Rs.*(sqrt(gamma)-sind(g));
+der = -e-e_spec;
+Di = sldist.*(1-cosd(e-e_spec));
+
+% der = -e-e_spec; % or der = -(-e+e_spec) (master thesis incorrect)
+% Di = sldist.*(1-cosd(der)); 
 end
 
 function [g,e_spec] = get_spherical_finite (e, Ha, Rs, optnum)
