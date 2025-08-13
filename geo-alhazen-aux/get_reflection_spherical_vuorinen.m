@@ -58,8 +58,7 @@ geo_ang_as = phia-phi0;
 % Reflection point in a quasigeocentric frame
 phia_rad = deg2rad(phia);
 pos_spec_complex = w0./exp(-1i*(pi./2-phia_rad)).*Rs-complex(0,Rs);
-% x_spec = real(pos_spec_complex);
-x_spec = phi0;
+x_spec = real(pos_spec_complex);
 y_spec = imag(pos_spec_complex);
 pos_spec_geo = [x_spec y_spec+Rs];
 

@@ -10,7 +10,7 @@ Ra = Rs+Ha;
 c = Rs/Ra;
 s_obs = sin(2 * to);
 c_obs = cos(2 * to);
-c2 = c^2;
+c2 = c^2 + 0j;
 c2_4 = c2 - 4;
 c2_43 = c2_4^3;
 c4 = c^4;
@@ -37,8 +37,7 @@ end
 ts = rad2deg(ts);
 
 % Specular position
-% x_spec = Rs*cosd(ts);
-x_spec=ts;
+x_spec = Rs*cosd(ts);
 y_spec = Rs*sind(ts)-Rs;
 pos_spec = [x_spec y_spec];
 pos_spec_geo = [x_spec y_spec+Rs];
@@ -54,8 +53,4 @@ dir_trans = [dx_trans dy_trans];
 
 [di, slant_dist] = get_delay_infinite_trans (pos_spec, pos_ant, dir_trans);
 graz_ang = get_grazing_angle_infinite (pos_ant_geo, pos_spec_geo, dir_trans);
-
-phi0 = ts;
-phia = 90-e;
-geo_ang_as = phia-phi0;
-% geo_ang_as = get_geocentric_angle_sfc (Ha,graz_ang,Rs);
+geo_ang_as = 90-ts;
