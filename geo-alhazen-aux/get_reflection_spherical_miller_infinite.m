@@ -51,6 +51,14 @@ dx_trans = cosd(e);
 dy_trans = sind(e);
 dir_trans = [dx_trans dy_trans];
 
-[di, slant_dist] = get_delay_infinite_trans (pos_spec, pos_ant, dir_trans);
-graz_ang = get_grazing_angle_infinite (pos_ant_geo, pos_spec_geo, dir_trans);
+% Interferometric delay and slant distance
+[di, slant_dist] = get_delay_infinite_trans (pos_spec, pos_ant, dir_trans); 
+
+% Geocentric angle between antenna and specular point
 geo_ang_as = 90-ts;
+
+% Grazing angle
+t2 = 2.*ts-e;
+graz_ang = 90-(t2-ts);
+
+
