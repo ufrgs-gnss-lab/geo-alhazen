@@ -69,6 +69,7 @@ dy_trans = sind(e);
 dir_trans = [dx_trans, dy_trans];
 
 % Grazing angle
-graz_ang = 90-rad2deg(angle(fa./w0-1));
+% graz_ang = 90-rad2deg(angle(fa./w0-1));
+graz_ang = 90-phi0;
 
 end 
