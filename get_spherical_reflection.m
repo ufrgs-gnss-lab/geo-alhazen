@@ -1,4 +1,4 @@
-function [delay, graz_ang, arc_len, slant_dist, x_spec, y_spec, x_trans, y_trans, elev_spec, delay_direct] = ...
+function [delay, graz_ang, arc_len, slant_dist, x_spec, y_spec, x_trans, y_trans, elev_spec, delay_direct, geo_ang_as] = ...
             get_spherical_reflection (e, Ha, Ht, Rs, algorithm, trajectory, frame)
 % GET_SPHERICAL_REFLECTION  Calculates specular reflection on spherical surface.
 %
@@ -151,6 +151,7 @@ function [delay, graz_ang, arc_len, slant_dist, x_spec, y_spec, x_trans, y_trans
     y_trans = reshape(y_trans, siz);
     elev_spec = reshape(elev_spec, siz);
     delay_direct = reshape(delay_direct, siz);
+    geo_ang_as = reshape(geo_ang_as, siz);
 
     %% Optionally, convert from reference frame:
     if strcmpi(frame, 'local'),  return;  end
